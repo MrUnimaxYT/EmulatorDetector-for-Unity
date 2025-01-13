@@ -17,7 +17,7 @@ public class AndroidEmulatorDetector
 	{
 		if (Check00() || Check01() || Check02() || Check03() 
 		//|| Check04() 
-		|| Check05() || Check06() || Check07() || Check08()
+		|| Check05() || Check06() || Check07() || //Check08()
 		)
 		{
 			return true;
