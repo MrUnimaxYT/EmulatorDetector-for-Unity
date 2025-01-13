@@ -6,22 +6,19 @@ public class AndroidEmulatorDetector
 {
 	public static bool isEmulator()
 	{
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN
-		return false;
-#else
 		if (CheckAll())
 		{
 			return true;
 		}
         return false;
-#endif
 	}
 
 	private static bool CheckAll()
 	{
-		if (Check00() || Check01() || Check02() || Check03() || 
-		//Check04() || 
-		Check05() || Check06() || Check07())
+		if (Check00() || Check01() || Check02() || Check03() 
+		//|| Check04() 
+		|| Check05() || Check06() || Check07() || Check08()
+		)
 		{
 			return true;
 		}
@@ -105,6 +102,7 @@ public class AndroidEmulatorDetector
 		{
 			"com.google.android.launcher.layouts.genymotion",
 			"com.bluestacks",
+			//"com.android.inputdevices",
 			"com.bignox.app"
 		};
 		for (int i = 0; i < array.Length; i++)
@@ -124,6 +122,7 @@ public class AndroidEmulatorDetector
 		}
 		return false;
 	}
+	
 
 	private static bool Check03()
 	{
@@ -161,6 +160,7 @@ public class AndroidEmulatorDetector
 	private static bool Check05()
 	{
 		string text = new AndroidJavaClass("android.os.Environment").CallStatic<AndroidJavaObject>("getExternalStorageDirectory", new object[0]).Call<string>("toString", new object[0]);
+		//string text = "";
 		if (Directory.Exists(text + "/Android/data/com.bluestacks.home"))
 		{
 			return true;
@@ -189,6 +189,14 @@ public class AndroidEmulatorDetector
 		{
 			return true;
 		}
+		if (Directory.Exists(text + "/Android/data/com.amaze.filemanager"))
+		{
+			return true;
+		}
+		if (Directory.Exists("data/data/com.android.inputdevices"))
+		{
+			return true;
+		}
 		if (Directory.Exists("data/data/com.microvirt.memuime"))
 		{
 			return true;
@@ -204,6 +212,7 @@ public class AndroidEmulatorDetector
 	{
 		AndroidJavaClass androidJavaClass = new AndroidJavaClass("android.os.Build");
 		string @static = androidJavaClass.GetStatic<string>("PRODUCT");
+		//string @static = "";
 		if (@static.Contains("sdk"))
 		{
 			return true;
@@ -241,6 +250,7 @@ public class AndroidEmulatorDetector
 			return true;
 		}
 		string static2 = androidJavaClass.GetStatic<string>("MANUFACTURER");
+		///string static2 = "";
 		if (static2.Equals("unknown"))
 		{
 			return true;
@@ -412,4 +422,29 @@ public class AndroidEmulatorDetector
 		}
 		return false;
 	}
+
+	private static bool Check08()
+    {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        try
+        {
+            using (var buildClass = new AndroidJavaClass("android.os.Build"))
+            {
+                string radioVersion = buildClass.GetStatic<string>("getRadioVersion");
+                Debug.Log($"DEBUG VERISON: {radioVersion}");
+                if (string.IsNullOrEmpty(radioVersion) || radioVersion.Contains("unknown"))
+                {
+                    return true;
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"ERROR: {e.Message}");
+        }
+#endif
+        return false;
+    }
+
+	
 }
